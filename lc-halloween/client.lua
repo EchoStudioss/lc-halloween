@@ -8,7 +8,6 @@ function LoadAnimDict(dict)
     end
 end
 
--- Spawn the ped on script load and make it targetable
 Citizen.CreateThread(function()
     local pedModel = GetHashKey(Config.GroupPed.model)
 
@@ -17,29 +16,25 @@ Citizen.CreateThread(function()
         Wait(100)
     end
 
-    -- Spawn the ped at the specified location
     groupPed = CreatePed(4, pedModel, Config.GroupPed.coords.x, Config.GroupPed.coords.y, Config.GroupPed.coords.z, Config.GroupPed.heading, false, true)
     
     if DoesEntityExist(groupPed) then
         print("Ped created successfully!")
 
-        -- Ensure the ped doesn't move or die
         FreezeEntityPosition(groupPed, true)
         SetEntityInvincible(groupPed, true)
         SetBlockingOfNonTemporaryEvents(groupPed, true)
 
-        -- Register the entity as networked and get the network ID
         NetworkRegisterEntityAsNetworked(groupPed)
-        pedNetId = NetworkGetNetworkIdFromEntity(groupPed) -- Get the network ID for ox_target
+        pedNetId = NetworkGetNetworkIdFromEntity(groupPed)
 
-        -- Add the ped as a targetable entity using ox_target
         exports.ox_target:addEntity(pedNetId, {
             {
                 name = 'groupmenu',
                 label = 'Group Menu',
                 icon = 'fas fa-users',
-                event = 'showGroupMenu', -- The event triggered when targeting the ped
-                distance = 2.0, -- Interaction distance
+                event = 'showGroupMenu',
+                distance = 2.0,
             }
         })
     else
@@ -48,7 +43,7 @@ Citizen.CreateThread(function()
 end)
 
 RegisterNetEvent('showGroupMenu', function()
-    lib.showContext('group_context') -- Show the previously registered group context menu
+    lib.showContext('group_context')
 end)
 
 lib.registerContext({
@@ -67,9 +62,8 @@ lib.registerContext({
             title = 'Invite a Player',
             icon = 'user-plus',
             onSelect = function()
-                lib.hideContext() -- Hide current menu to avoid conflict with input dialog
+                lib.hideContext()
 
-                -- Use input dialog for player input
                 local input = lib.inputDialog('Invite Player', {
                     { type = 'input', label = 'Enter Player Server ID', placeholder = 'e.g., 1', required = true, icon = 'user' }
                 })
@@ -123,15 +117,13 @@ RegisterNetEvent('trickortreat:showGroupMembers', function(members)
         })
     end
 
-    -- Register the members context menu
     lib.registerContext({
         id = 'members_context',
         title = 'Group Members',
-        menu = 'group_context', -- Go back to main group menu
+        menu = 'group_context',
         options = options
     })
 
-    -- Show the members context menu
     lib.showContext('members_context')
 end)
 
